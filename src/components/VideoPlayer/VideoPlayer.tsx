@@ -14,6 +14,7 @@ export function VideoPlayer({ config }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const CONTROLS_HIDE_MS = 3000;
 
   const [controlsVisible, setControlsVisible] = useState(true);
 
@@ -26,7 +27,7 @@ export function VideoPlayer({ config }: VideoPlayerProps) {
     setControlsVisible(true);
     clearTimeout(hideTimerRef.current);
     if (isPlaying) {
-      hideTimerRef.current = setTimeout(() => setControlsVisible(false), 3000);
+      hideTimerRef.current = setTimeout(() => setControlsVisible(false), CONTROLS_HIDE_MS);
     }
   }, [isPlaying]);
 
@@ -35,14 +36,18 @@ export function VideoPlayer({ config }: VideoPlayerProps) {
       clearTimeout(hideTimerRef.current);
       setControlsVisible(true);
     } else {
-      hideTimerRef.current = setTimeout(() => setControlsVisible(false), 3000);
+      hideTimerRef.current = setTimeout(() => setControlsVisible(false), CONTROLS_HIDE_MS);
     }
     return () => clearTimeout(hideTimerRef.current);
   }, [isPlaying]);
 
-  const handleDoubleClick = useCallback(() => {
+  const handleToggleFullscreen = useCallback(() => {
     toggleFullscreen(containerRef);
   }, [toggleFullscreen]);
+
+  const handleDoubleClick = useCallback(() => {
+    handleToggleFullscreen();
+  }, [handleToggleFullscreen]);
 
   return (
     <div
@@ -78,7 +83,7 @@ export function VideoPlayer({ config }: VideoPlayerProps) {
         onVolumeChange={setVolume}
         onToggleMute={toggleMute}
         onQualityChange={setQuality}
-        onToggleFullscreen={() => toggleFullscreen(containerRef)}
+        onToggleFullscreen={handleToggleFullscreen}
       />
     </div>
   );

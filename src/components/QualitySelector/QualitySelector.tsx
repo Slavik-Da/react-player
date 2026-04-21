@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { QualityLevel } from '../../types/player';
 import styles from './QualitySelector.module.css';
 
@@ -23,12 +23,10 @@ export function QualitySelector({ qualityLevels, currentQuality, onQualityChange
     return () => document.removeEventListener('mousedown', handler);
   }, [isOpen]);
 
-  if (qualityLevels.length === 0) return null;
+  const reversedLevels = useMemo(() => [...qualityLevels].reverse(), [qualityLevels]);
+  const currentLabel = qualityLevels.find(l => l.id === currentQuality)?.label ?? 'Auto';
 
-  const currentLabel =
-    currentQuality === -1
-      ? 'Auto'
-      : qualityLevels.find(l => l.id === currentQuality)?.label ?? 'Auto';
+  if (qualityLevels.length === 0) return null;
 
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
@@ -40,7 +38,7 @@ export function QualitySelector({ qualityLevels, currentQuality, onQualityChange
           >
             Auto
           </li>
-          {[...qualityLevels].reverse().map(level => (
+          {reversedLevels.map(level => (
             <li
               key={level.id}
               className={level.id === currentQuality ? styles.active : ''}

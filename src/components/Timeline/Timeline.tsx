@@ -21,9 +21,12 @@ export function Timeline({ currentTime, buffered, duration, chapters, onSeek }: 
   });
   const [hoveredChapterStart, setHoveredChapterStart] = useState<number | null>(null);
 
+  const HOVER_COLOR = '#76A4F9';
+
   const getTimeAndX = useCallback(
     (e: React.MouseEvent): { time: number; x: number } => {
-      const rect = containerRef.current!.getBoundingClientRect();
+      if (!containerRef.current) return { time: 0, x: 0 };
+      const rect = containerRef.current.getBoundingClientRect();
       const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       return { time: ratio * duration, x: ratio * rect.width };
     },
@@ -32,7 +35,6 @@ export function Timeline({ currentTime, buffered, duration, chapters, onSeek }: 
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      if (!containerRef.current) return;
       const { time, x } = getTimeAndX(e);
       const chapter = chapters.find(c => time >= c.start && time <= c.end);
       setTooltip({ visible: true, x, time, chapterTitle: chapter?.title ?? '' });
@@ -88,13 +90,13 @@ export function Timeline({ currentTime, buffered, duration, chapters, onSeek }: 
               className={styles.segment}
               style={{
                 flexGrow: chapterDuration,
-                background: isHovered ? '#76A4F9' : undefined,
+                background: isHovered ? HOVER_COLOR : undefined,
               }}
             >
               {bufferedPct > 0 && (
                 <div
                   className={styles.segmentBuffered}
-                  style={{ width: `${bufferedPct}%`, background: isHovered ? '#76A4F9' : undefined }}
+                  style={{ width: `${bufferedPct}%`, background: isHovered ? HOVER_COLOR : undefined }}
                 />
               )}
               {playedPct > 0 && (
