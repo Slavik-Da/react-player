@@ -1,0 +1,8 @@
+.time {
+  color: white;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  white-space: nowrap;
+  opacity: 0.95;
+  user-select: none;
+}

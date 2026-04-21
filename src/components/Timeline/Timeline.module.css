@@ -1,0 +1,50 @@
+.container {
+  position: relative;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.track {
+  position: relative;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+  overflow: visible;
+  transition: height 0.15s ease;
+}
+
+.container:hover .track {
+  height: 5px;
+}
+
+.buffer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.separator {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: calc(100% + 4px);
+  background: #1a1a1a;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
