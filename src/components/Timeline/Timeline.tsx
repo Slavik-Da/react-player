@@ -100,7 +100,10 @@ export function Timeline({ currentTime, buffered, duration, chapters, onSeek }: 
                 />
               )}
               {playedPct > 0 && (
-                <div className={styles.segmentPlayed} style={{ width: `${playedPct}%` }} />
+                <div
+                  className={styles.segmentPlayed}
+                  style={{ width: `${playedPct}%`, background: isHovered ? HOVER_COLOR : undefined }}
+                />
               )}
             </div>
           );
