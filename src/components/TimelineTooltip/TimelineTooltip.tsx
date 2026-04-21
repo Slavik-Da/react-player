@@ -10,8 +10,11 @@ interface TimelineTooltipProps {
 export function TimelineTooltip({ x, time, chapterTitle }: TimelineTooltipProps) {
   return (
     <div className={styles.tooltip} style={{ left: x }}>
-      {chapterTitle && <span className={styles.chapter}>{chapterTitle}</span>}
-      <span className={styles.time}>{formatTime(time)}</span>
+      <div className={styles.body}>
+        {chapterTitle && <span className={styles.chapter}>{chapterTitle}</span>}
+        <span className={styles.time}>{formatTime(time)}</span>
+      </div>
+      <div className={styles.arrow} />
     </div>
   );
 }

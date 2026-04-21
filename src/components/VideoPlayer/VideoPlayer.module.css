@@ -2,10 +2,11 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: 6px;
+  background: #ffffff;
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.09);
 }
 
 .video {

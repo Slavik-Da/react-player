@@ -1,50 +1,58 @@
 .container {
   position: relative;
-  padding: 8px 0;
+  padding: 6px 0;
   cursor: pointer;
+  width: 100%;
+  flex-shrink: 0;
 }
 
-.track {
+.segments {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  height: 4px;
+}
+
+.segment {
   position: relative;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 2px;
-  overflow: visible;
-  transition: height 0.15s ease;
+  height: 4px;
+  background: #8B8EA4;
+  border-radius: 1px;
+  overflow: hidden;
+  flex-shrink: 0;
+  flex-basis: 0;
 }
 
-.container:hover .track {
-  height: 5px;
-}
-
-.buffer {
+.segmentBuffered {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 2px;
+  background: #AAADC0;
+  border-radius: 1px;
   pointer-events: none;
 }
 
-.progress {
+.segmentPlayed {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  background: #ffffff;
-  border-radius: 2px;
+  background: #F6F9FF;
+  border-radius: 1px;
   pointer-events: none;
   z-index: 1;
 }
 
-.separator {
+.playhead {
   position: absolute;
-  top: -2px;
-  width: 2px;
-  height: calc(100% + 4px);
-  background: #1a1a1a;
-  transform: translateX(-50%);
+  top: 50%;
+  width: 4px;
+  height: 14px;
+  background: #F6F9FF;
+  border-radius: 1px;
+  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 2;
 }

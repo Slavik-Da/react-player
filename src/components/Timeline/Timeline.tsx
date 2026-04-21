@@ -12,82 +12,103 @@ interface TimelineProps {
 }
 
 export function Timeline({ currentTime, buffered, duration, chapters, onSeek }: TimelineProps) {
-  const barRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<TooltipState>({
     visible: false,
     x: 0,
     time: 0,
     chapterTitle: '',
   });
+  const [hoveredChapterStart, setHoveredChapterStart] = useState<number | null>(null);
 
-  const getTimeFromEvent = useCallback(
+  const getTimeAndX = useCallback(
     (e: React.MouseEvent): { time: number; x: number } => {
-      const rect = barRef.current!.getBoundingClientRect();
+      const rect = containerRef.current!.getBoundingClientRect();
       const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      const time = ratio * duration;
-      const barWidth = rect.width;
-      const rawX = ratio * barWidth;
-      return { time, x: rawX };
+      return { time: ratio * duration, x: ratio * rect.width };
     },
     [duration]
   );
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      if (!barRef.current) return;
-      const { time, x } = getTimeFromEvent(e);
+      if (!containerRef.current) return;
+      const { time, x } = getTimeAndX(e);
       const chapter = chapters.find(c => time >= c.start && time <= c.end);
-      setTooltip({
-        visible: true,
-        x,
-        time,
-        chapterTitle: chapter?.title ?? '',
-      });
+      setTooltip({ visible: true, x, time, chapterTitle: chapter?.title ?? '' });
+      setHoveredChapterStart(chapter?.start ?? null);
     },
-    [getTimeFromEvent, chapters]
+    [getTimeAndX, chapters]
   );
 
   const handleMouseLeave = useCallback(() => {
     setTooltip(prev => ({ ...prev, visible: false }));
+    setHoveredChapterStart(null);
   }, []);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
-      if (!barRef.current) return;
-      const { time } = getTimeFromEvent(e);
+      const { time } = getTimeAndX(e);
       onSeek(time);
     },
-    [getTimeFromEvent, onSeek]
+    [getTimeAndX, onSeek]
   );
 
-  const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
-  const bufferedPct = duration > 0 ? (buffered / duration) * 100 : 0;
+  const playheadPct = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <div
+      ref={containerRef}
       className={styles.container}
-      ref={barRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      <div className={styles.track}>
-        <div className={styles.buffer} style={{ width: `${bufferedPct}%` }} />
-        <div className={styles.progress} style={{ width: `${progressPct}%` }} />
-        {chapters.slice(1).map(chapter => (
-          <div
-            key={chapter.start}
-            className={styles.separator}
-            style={{ left: `${(chapter.start / duration) * 100}%` }}
-          />
-        ))}
+      <div className={styles.segments}>
+        {chapters.map(chapter => {
+          const chapterDuration = chapter.end - chapter.start;
+          const playedEnd = Math.min(currentTime, chapter.end);
+          const bufferedEnd = Math.min(buffered, chapter.end);
+
+          const playedPct =
+            currentTime >= chapter.start
+              ? Math.max(0, (playedEnd - chapter.start) / chapterDuration) * 100
+              : 0;
+
+          const bufferedPct =
+            buffered >= chapter.start
+              ? Math.max(0, (bufferedEnd - chapter.start) / chapterDuration) * 100
+              : 0;
+
+          const isHovered = hoveredChapterStart === chapter.start;
+
+          return (
+            <div
+              key={chapter.start}
+              className={styles.segment}
+              style={{
+                flexGrow: chapterDuration,
+                background: isHovered ? '#76A4F9' : undefined,
+              }}
+            >
+              {bufferedPct > 0 && (
+                <div
+                  className={styles.segmentBuffered}
+                  style={{ width: `${bufferedPct}%`, background: isHovered ? '#76A4F9' : undefined }}
+                />
+              )}
+              {playedPct > 0 && (
+                <div className={styles.segmentPlayed} style={{ width: `${playedPct}%` }} />
+              )}
+            </div>
+          );
+        })}
       </div>
+
+      <div className={styles.playhead} style={{ left: `${playheadPct}%` }} />
+
       {tooltip.visible && (
-        <TimelineTooltip
-          x={tooltip.x}
-          time={tooltip.time}
-          chapterTitle={tooltip.chapterTitle}
-        />
+        <TimelineTooltip x={tooltip.x} time={tooltip.time} chapterTitle={tooltip.chapterTitle} />
       )}
     </div>
   );
